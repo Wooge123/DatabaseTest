@@ -34,20 +34,10 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				SQLiteDatabase db = dbHelper.getWritableDatabase();
-				ContentValues values = new ContentValues();
-
-				values.put("name", "The Da Vinci Code");
-				values.put("author", "Dan Brown");
-				values.put("pages", 454);
-				values.put("price", 16.96);
-				db.insert("Book", null, values);
-				values.clear();
-
-				values.put("name", "The Lost Symbol");
-				values.put("author", "Dan Brown");
-				values.put("pages", 510);
-				values.put("price", 19.95);
-				db.insert("Book", null, values);
+				db.execSQL("insert into Book (name, author, pages, price) values(?, ?, ?, ?)",
+						new String[] { "The Da Vinci Code", "Dan Brown", "454", "16.96" });
+				db.execSQL("insert into Book (name, author, pages, price) values(?, ?, ?, ?)",
+						new String[] { "The Lost Symbol", "Dan Brown", "510", "19.95" });
 			}
 		});
 
@@ -57,9 +47,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				SQLiteDatabase db = dbHelper.getWritableDatabase();
-				ContentValues values = new ContentValues();
-				values.put("price", 10.99);
-				db.update("Book", values, "name = ?", new String[] { "The Da Vinci Code" });
+				db.execSQL("update Book set price = ? where name = ?", new String[] { "10.99", "The Da Vinci Code" });
 			}
 		});
 
@@ -69,7 +57,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				SQLiteDatabase db = dbHelper.getWritableDatabase();
-				db.delete("Book", "pages > ?", new String[] { "500" });
+				db.execSQL("delete from Book where pages > ?", new String[] { "500" });
 			}
 		});
 
@@ -79,7 +67,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				SQLiteDatabase db = dbHelper.getWritableDatabase();
-				Cursor cursor = db.query("Book", null, null, null, null, null, null);
+				Cursor cursor = db.rawQuery("select * from Book", null);
 				if (cursor.moveToFirst()) {
 					do {
 						String name = cursor.getString(cursor.getColumnIndex("name"));
@@ -96,5 +84,4 @@ public class MainActivity extends Activity {
 			}
 		});
 	}
-
 }
